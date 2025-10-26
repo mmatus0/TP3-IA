@@ -1,0 +1,43 @@
+[
+    {
+        "id": 1,
+        "nombre": "Riesgo EXTREMO por Sequía y Calor",
+        "condiciones": {
+            "temperatura": {"operador": ">=", "valor": 38},
+            "humedad": {"operador": "<", "valor": 30},
+            "viento": {"operador": ">", "valor": 20}
+        },
+        "resultado": "EXTREMO",
+        "accion": "Activar Plan de Emergencia Nivel 3. Notificar a todas las brigadas y autoridades. Suspender todas las operaciones de riesgo."
+    },
+    {
+        "id": 2,
+        "nombre": "Riesgo ALTO por Viento Fuerte y Temperatura",
+        "condiciones": {
+            "temperatura": {"operador": ">", "valor": 30},
+            "viento": {"operador": ">", "valor": 30}
+        },
+        "resultado": "ALTO",
+        "accion": "Generar Alerta Preliminar. Suspender quema controlada y movilizar equipos de monitoreo."
+    },
+    {
+        "id": 3,
+        "nombre": "Riesgo MEDIO - Alerta de Humedad Baja",
+        "condiciones": {
+            "temperatura": {"operador": ">", "valor": 35},
+            "humedad": {"operador": "<=", "valor": 40}
+        },
+        "resultado": "MEDIO",
+        "accion": "Aumentar el monitoreo ambiental y preparar el terreno. Riego < 50% debe activar mantenimiento."
+    },
+    {
+        "id": 4,
+        "nombre": "Riesgo BAJO - Condiciones Estables",
+        "condiciones": {
+            "temperatura": {"operador": "<", "valor": 25},
+            "humedad": {"operador": ">", "valor": 50}
+        },
+        "resultado": "BAJO",
+        "accion": "Rutinario. Monitoreo cada 4 horas y planificación de actividades de mitigación."
+    }
+]
