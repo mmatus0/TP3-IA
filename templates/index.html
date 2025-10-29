@@ -1,66 +1,221 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asistente de Riesgo de Incendios</title>
     <style>
         /* Estilos generales */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f9; }
-        h1 { color: #cc0000; text-align: center; margin-bottom: 20px; }
-        h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; color: #333; }
-        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            color: #cc0000;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            color: #333;
+        }
+
         /* Estilos de la estructura de dos columnas */
-        .main-container { display: flex; width: 100%; max-width: 1100px; margin: 0 auto; background-color: white; border: 1px solid #ccc; }
-        .left-panel { flex: 1; padding: 20px; border-right: 1px solid #eee; }
-        .right-panel { flex: 1; padding: 20px; }
-        
+        .main-container {
+            display: flex;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: white;
+            border: 1px solid #ccc;
+        }
+
+        .left-panel {
+            flex: 1;
+            padding: 20px;
+            border-right: 1px solid #eee;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 20px;
+        }
+
         /* Estilos de formulario e inputs */
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input { width: 95%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .button-diagnosticar { padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 95%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .button-diagnosticar {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
         /* Estilos de resultados */
-        .resultado { padding: 15px; margin-top: 10px; border-radius: 5px; font-size: 1.1em; }
-        .riesgo-EXTREMO { background-color: #fdd; border: 1px solid red; color: #a00; }
-        .riesgo-ALTO { background-color: #ffe0b2; border: 1px solid orange; color: #d65a00; }
-        .riesgo-MEDIO { background-color: #fff8e1; border: 1px solid gold; color: #a1887f; }
-        .riesgo-BAJO { background-color: #e8f5e9; border: 1px solid green; color: #388e3c; }
-        .riesgo-NO\.CLASIFICADO { background-color: #eee; border: 1px solid #999; color: #555; }
-        
+        .resultado {
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 1.1em;
+        }
+
+        .riesgo-EXTREMO {
+            background-color: #fdd;
+            border: 1px solid red;
+            color: #a00;
+        }
+
+        .riesgo-ALTO {
+            background-color: #ffe0b2;
+            border: 1px solid orange;
+            color: #d65a00;
+        }
+
+        .riesgo-MEDIO {
+            background-color: #fff8e1;
+            border: 1px solid gold;
+            color: #a1887f;
+        }
+
+        .riesgo-BAJO {
+            background-color: #e8f5e9;
+            border: 1px solid green;
+            color: #388e3c;
+        }
+
+        .riesgo-NO\.CLASIFICADO {
+            background-color: #eee;
+            border: 1px solid #999;
+            color: #555;
+        }
+
         /* Estilos de la tabla de historial */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; color: #333; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        /* CORRECCIÓN VISUAL: Estilos adicionales para corregir la alineación del historial */
+        .left-panel .resultado {
+            display: inline-block;
+            /* CLAVE para que el span respete la altura de la fila */
+            padding: 2px 5px;
+            /* Padding reducido para mejor ajuste */
+            font-size: 0.9em;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        /* Estilos para el mensaje Flash */
+        .flashes {
+            list-style: none;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            color: #1565c0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .flashes.error {
+            background-color: #ffebee;
+            border-color: #ef9a9a;
+            color: #c62828;
+        }
+
+        .flashes.success {
+            background-color: #e8f5e9;
+            border-color: #a5d6a7;
+            color: #2e7d32;
+        }
     </style>
 </head>
+
 <body>
     <h1>🔥 Asistente de Gestión de Riesgos de Incendios</h1>
-    
+
     <div class="main-container">
 
         <div class="left-panel">
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
             <h2>Ingreso de Parámetros (Hechos)</h2>
             <form method="post">
                 <div class="form-group">
                     <label for="temperatura">Temperatura (°C):</label>
-                    <input type="number" step="0.1" name="temperatura" id="temperatura" required 
-                           value="{{ datos_entrada.temperatura if datos_entrada.temperatura else '' }}">
+                    <input type="number" step="0.1" name="temperatura" id="temperatura" required
+                        value="{{ datos_entrada.temperatura if datos_entrada.temperatura else '' }}">
                 </div>
                 <div class="form-group">
                     <label for="humedad">Humedad Relativa (%):</label>
                     <input type="number" step="0.1" name="humedad" id="humedad" required
-                           value="{{ datos_entrada.humedad if datos_entrada.humedad else '' }}">
+                        value="{{ datos_entrada.humedad if datos_entrada.humedad else '' }}">
                 </div>
                 <div class="form-group">
                     <label for="viento">Velocidad del Viento (km/h):</label>
                     <input type="number" step="0.1" name="viento" id="viento" required
-                           value="{{ datos_entrada.viento if datos_entrada.viento else '' }}">
+                        value="{{ datos_entrada.viento if datos_entrada.viento else '' }}">
                 </div>
                 <button type="submit" class="button-diagnosticar">Diagnosticar</button>
             </form>
 
-            <h2>Historial de Diagnósticos</h2>
+            <h2>
+                Historial de Diagnósticos
+                {% if total_registros is not none %}
+                <small style="font-weight: normal; color: #555;">(Total: {{ total_registros }})</small>
+                <a href="{{ url_for('eliminar_historial') }}"
+                    onclick="return confirm('¿Estás seguro de que quieres eliminar TODO el historial de diagnósticos?');">
+                    <button class="button-diagnosticar"
+                        style="background-color: #cc0000; padding: 1px 4px; font-size: 0.65em; margin-left: 10px;">
+                        Borrar Historial
+                    </button>
+                </a>
+                {% endif %}
+            </h2>
             {% if registros %}
             <table>
                 <thead>
@@ -91,29 +246,34 @@
 
         <div class="right-panel">
             <h2 style="color: #cc0000; border-bottom: none;">Resultado del Diagnóstico</h2>
-            {% if resultado %}
-            <div class="resultado riesgo-{{ resultado.nivel.replace(' ', '.') }}">
-                <h3>Nivel de Riesgo: {{ resultado.nivel }}</h3>
-                
+            {% set res = session.pop('last_result', none) %}
+            {% if res %}
+            <div class="resultado riesgo-{{ res.nivel.replace(' ', '.') }}">
+                <h3>Nivel de Riesgo: {{ res.nivel }}</h3>
+
                 <h4>Acción Recomendada:</h4>
-                <p>{{ resultado.accion }}</p>
+                <p>{{ res.accion }}</p>
 
                 <h4>Justificación (Regla):</h4>
-                <p>{{ resultado.justificacion }}</p>
+                <p>{{ res.justificacion }}</p>
             </div>
             {% else %}
             <p>Ingresa los parámetros ambientales para evaluar el nivel de riesgo de incendio.</p>
             {% endif %}
-            
+
             <hr>
 
             <h2>Funcionalidades</h2>
             <ul>
                 <li>**Diagnóstico Inmediato:** Evaluación del riesgo según los parámetros ingresados.</li>
                 <li>**Base de Datos Histórica:** Muestra los últimos 10 diagnósticos guardados en SQLite.</li>
-                <li>**Motor de Inferencia Priorizado:** Aplica las reglas en orden (EXTREMO, ALTO, MEDIO, BAJO) para determinar el riesgo.</li>
+                <li>**Motor de Inferencia Priorizado:** Aplica las reglas en orden (EXTREMO, ALTO, MEDIO, BAJO) para
+                    determinar el riesgo.</li>
+                <li>**Gestión de Historial:** Permite **eliminar** todos los registros de la base de datos con un botón.
+                </li>
             </ul>
         </div>
     </div>
 </body>
+
 </html>

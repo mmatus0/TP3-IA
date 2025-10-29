@@ -1,14 +1,17 @@
 import json
 import sqlite3
 from datetime import datetime
-from flask import Flask, render_template, request
+# MODIFICADO: Añadir flash, redirect, url_for, session
+from flask import Flask, render_template, request, flash, redirect, url_for, session 
 
 # --- Configuración Inicial ---
 app = Flask(__name__)
+# AÑADIDO: Clave secreta necesaria para usar session y flash
+app.secret_key = 'clave_secreta_facil_y_segura' 
 REGLAS = [] # Base de Conocimiento (Reglas cargadas desde JSON)
 DB_NAME = "diagnosticos_riesgo.db" # Nombre del archivo SQLite
 
-# --- Funciones de Gestión de Reglas y Motor de Inferencia ---
+# --- Funciones de Gestión de Reglas y Motor de Inferencia (SIN CAMBIOS) ---
 
 def cargar_reglas():
     """Cargo la base de conocimiento (Reglas) desde el archivo JSON."""
@@ -72,7 +75,7 @@ def inferir_riesgo(datos_entrada):
     } 
 
 
-  # ----- Base de Datos - SQLite ----- 
+  # ----- Base de Datos - SQLite (MANTENER) ----- 
 
 
 def init_db():
@@ -119,39 +122,81 @@ def obtener_diagnosticos():
         return cursor.fetchall()  
 
 
+# AÑADIDO: Contador de registros
+def contar_registros():
+    """Obtiene el número total de diagnósticos guardados en la BDD."""
+    with sqlite3.connect(DB_NAME) as connexion:
+        cursor = connexion.cursor()
+        cursor.execute("SELECT COUNT(*) FROM diagnosticos")
+        return cursor.fetchone()[0]
 
-# ------ Flask -----
+
+# AÑADIDO: Función para eliminar historial
+@app.route("/eliminar_historial", methods=["POST", "GET"])
+def eliminar_historial():
+    """Elimina todos los registros de la tabla de diagnósticos."""
+    try:
+        with sqlite3.connect(DB_NAME) as connexion:
+            cursor = connexion.cursor()
+            cursor.execute("DELETE FROM diagnosticos")
+            connexion.commit()
+        flash('Historial de diagnósticos eliminado exitosamente.', 'success')
+    except Exception as e:
+        flash(f'Error al eliminar el historial: {e}', 'error')
+    
+    # Redirige para refrescar el historial en la página principal
+    return redirect(url_for('index'))
+
+
+# ------ Flask: RUTA PRINCIPAL (MODIFICADA para PRG) -----
 @app.route("/", methods=["GET", "POST"])
 def index():
     cargar_reglas()
-    resultado = None
-    datos_entrada_display = {}
-    registros = obtener_diagnosticos() # Carga el historial al abrir la página
-
+    
+    # 1. Handle POST (Diagnóstico)
     if request.method == "POST":
-        # Recolectar hechos (datos de entrada)
-        datos_entrada = {
-            'temperatura': request.form.get('temperatura'),
-            'humedad': request.form.get('humedad'),
-            'viento': request.form.get('viento')
-        }
-       
-        datos_entrada_display = datos_entrada
-       
+        try:
+            # Recolectar hechos y convertir a float
+            datos_entrada = {
+                'temperatura': float(request.form.get('temperatura')),
+                'humedad': float(request.form.get('humedad')),
+                'viento': float(request.form.get('viento'))
+            }
+        except ValueError:
+            flash("Error: Asegúrate de ingresar números válidos en todos los campos.", 'error')
+            return redirect(url_for('index'))
+
         # Llamar al Motor de Inferencia
         resultado = inferir_riesgo(datos_entrada)
        
-        # Guardar el nuevo riesgo y recargar el historial
+        # Guardar el nuevo riesgo
         guardar_diagnostico(datos_entrada, resultado)
-        registros = obtener_diagnosticos()
-
+        
+        # PRG CLAVE: Guardar el resultado COMPLETO en la sesión antes de redirigir
+        session['last_result'] = resultado
+        session['last_inputs'] = datos_entrada # Guardar entradas para el mensaje flash
+        
+        flash(f"Diagnóstico guardado con éxito. Riesgo: {resultado['nivel']}", 'success')
+        
+        # REDIRECCIÓN: Evita la re-submisión al recargar (PRG)
+        return redirect(url_for('index'))
+    
+    # 2. Handle GET (Carga Inicial o Después de Redirección)
+    
+    # El formulario de entrada se pasará vacío, borrando los datos
+    datos_entrada_display = {} 
+    
+    registros = obtener_diagnosticos()
+    total_registros = contar_registros()
+    
     # Renderizar la plantilla HTML
     return render_template("index.html",
-                           resultado=resultado,
-                           datos_entrada=datos_entrada_display,
-                           registros=registros)
+                           # NOTA: ya no se pasa 'resultado' aquí, se recupera en el HTML de la sesión
+                           datos_entrada=datos_entrada_display, 
+                           registros=registros,
+                           total_registros=total_registros) 
 
-    # --- Función para Pruebas de Inferencia ---
+# --- Función para Pruebas de Inferencia (MANTENER) ---
 
 def ejecutar_pruebas_de_inferencia():
     """Define y ejecuta casos de prueba para validar el motor de inferencia (Reglas 1, 2, 3, 4)."""
@@ -196,7 +241,7 @@ def ejecutar_pruebas_de_inferencia():
     print(f"\n--- Resumen de Pruebas: {len(casos_prueba)} ejecutadas, {fallos} fallos. ---")
     return fallos == 0
 
-# --- Ejecución del Servidor ---
+# --- Ejecución del Servidor (MANTENER) ---
 if __name__ == "__main__":
     cargar_reglas()
     ejecutar_pruebas_de_inferencia()
