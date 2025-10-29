@@ -1,86 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-    <title>Sistema exporto de Riesgo de Incendios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Riesgo de Incendios</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 25px; background-color: #f4f4f9; }
-        h1, h2 { color: #333; }
-        form { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="number"] { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        input[type="submit"] { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        input[type="submit"]:hover { background-color: #45a049; }
+        /* Estilos generales */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f9; }
+        h1 { color: #cc0000; text-align: center; margin-bottom: 20px; }
+        h2 { border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; color: #333; }
         
-        .resultado { padding: 15px; margin-top: 20px; border-radius: 8px; font-size: 1.1em; }
-        .riesgo-EXTREMO { background-color: #fdd; border: 2px solid red; color: #a00; }
-        .riesgo-ALTO { background-color: #ffe0b2; border: 2px solid orange; color: #d65a00; }
-        .riesgo-MEDIO { background-color: #fff8e1; border: 2px solid gold; color: #a1887f; }
-        .riesgo-BAJO { background-color: #e8f5e9; border: 2px solid green; color: #388e3c; }
-        .riesgo-NO.CLASIFICADO { background-color: #eee; border: 2px solid #999; color: #555; }
+        /* Estilos de la estructura de dos columnas */
+        .main-container { display: flex; width: 100%; max-width: 1100px; margin: 0 auto; background-color: white; border: 1px solid #ccc; }
+        .left-panel { flex: 1; padding: 20px; border-right: 1px solid #eee; }
+        .right-panel { flex: 1; padding: 20px; }
+        
+        /* Estilos de formulario e inputs */
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 95%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .button-diagnosticar { padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        /* Estilos de resultados */
+        .resultado { padding: 15px; margin-top: 10px; border-radius: 5px; font-size: 1.1em; }
+        .riesgo-EXTREMO { background-color: #fdd; border: 1px solid red; color: #a00; }
+        .riesgo-ALTO { background-color: #ffe0b2; border: 1px solid orange; color: #d65a00; }
+        .riesgo-MEDIO { background-color: #fff8e1; border: 1px solid gold; color: #a1887f; }
+        .riesgo-BAJO { background-color: #e8f5e9; border: 1px solid green; color: #388e3c; }
+        .riesgo-NO\.CLASIFICADO { background-color: #eee; border: 1px solid #999; color: #555; }
+        
+        /* Estilos de la tabla de historial */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; color: #333; }
     </style>
 </head>
 <body>
-    <h1> Asistente de Gestión de Riesgos de Incendios Forestales</h1>
-    <h2>Ingreso de Condiciones Ambientales (Hechos)</h2>
-    <form method="post">
-        <label for="temperatura">Temperatura (°C):</label>
-        <input type="number" step="0.1" name="temperatura" id="temperatura" required 
-               value="{{ datos_entrada.temperatura if datos_entrada.temperatura else '' }}">
+    <h1>🔥 Asistente de Gestión de Riesgos de Incendios</h1>
+    
+    <div class="main-container">
 
-        <label for="humedad">Humedad Relativa (%):</label>
-        <input type="number" step="0.1" name="humedad" id="humedad" required
-               value="{{ datos_entrada.humedad if datos_entrada.humedad else '' }}">
+        <div class="left-panel">
+            <h2>Ingreso de Parámetros (Hechos)</h2>
+            <form method="post">
+                <div class="form-group">
+                    <label for="temperatura">Temperatura (°C):</label>
+                    <input type="number" step="0.1" name="temperatura" id="temperatura" required 
+                           value="{{ datos_entrada.temperatura if datos_entrada.temperatura else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="humedad">Humedad Relativa (%):</label>
+                    <input type="number" step="0.1" name="humedad" id="humedad" required
+                           value="{{ datos_entrada.humedad if datos_entrada.humedad else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="viento">Velocidad del Viento (km/h):</label>
+                    <input type="number" step="0.1" name="viento" id="viento" required
+                           value="{{ datos_entrada.viento if datos_entrada.viento else '' }}">
+                </div>
+                <button type="submit" class="button-diagnosticar">Diagnosticar</button>
+            </form>
 
-        <label for="viento">Velocidad del Viento (km/h):</label>
-        <input type="number" step="0.1" name="viento" id="viento" required
-               value="{{ datos_entrada.viento if datos_entrada.viento else '' }}">
+            <h2>Historial de Diagnósticos</h2>
+            {% if registros %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Temp</th>
+                        <th>Hum</th>
+                        <th>Viento</th>
+                        <th>Riesgo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in registros %}
+                    <tr>
+                        <td>{{ fila[0].split('T')[0] }} / {{ fila[0].split('T')[1].split('.')[0] }}</td>
+                        <td>{{ fila[1] }}</td>
+                        <td>{{ fila[2] }}</td>
+                        <td>{{ fila[3] }}</td>
+                        <td><span class="resultado riesgo-{{ fila[4].replace(' ', '.') }}">{{ fila[4] }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No hay registros guardados en el historial aún.</p>
+            {% endif %}
+        </div>
 
-        <input type="submit" value="Evaluar Riesgo">
-    </form>
+        <div class="right-panel">
+            <h2 style="color: #cc0000; border-bottom: none;">Resultado del Diagnóstico</h2>
+            {% if resultado %}
+            <div class="resultado riesgo-{{ resultado.nivel.replace(' ', '.') }}">
+                <h3>Nivel de Riesgo: {{ resultado.nivel }}</h3>
+                
+                <h4>Acción Recomendada:</h4>
+                <p>{{ resultado.accion }}</p>
 
-    {% if resultado %}
-    <div class="resultado riesgo-{{ resultado.nivel.replace(' ', '.') }}">
-        <h3>Diagnóstico de Riesgo: **{{ resultado.nivel }}**</h3>
-        
-        <h4>Acción Recomendada:</h4>
-        <p>{{ resultado.accion }}</p>
+                <h4>Justificación (Regla):</h4>
+                <p>{{ resultado.justificacion }}</p>
+            </div>
+            {% else %}
+            <p>Ingresa los parámetros ambientales para evaluar el nivel de riesgo de incendio.</p>
+            {% endif %}
+            
+            <hr>
 
-        <h4>Justificación de la Inferencia (Motor de Reglas):</h4>
-        <p>{{ resultado.justificacion }}</p>
+            <h2>Funcionalidades</h2>
+            <ul>
+                <li>**Diagnóstico Inmediato:** Evaluación del riesgo según los parámetros ingresados.</li>
+                <li>**Base de Datos Histórica:** Muestra los últimos 10 diagnósticos guardados en SQLite.</li>
+                <li>**Motor de Inferencia Priorizado:** Aplica las reglas en orden (EXTREMO, ALTO, MEDIO, BAJO) para determinar el riesgo.</li>
+            </ul>
+        </div>
     </div>
-    {% endif %}
-
-    <hr>
-    <h2>Historial de Riesgos (Base de Datos SQLite)</h2>
-
-    {% if registros %}
-    <table>
-        <tr>
-            <th>Fecha y Hora</th>
-            <th>Temperatura (°C)</th>
-            <th>Humedad Relativa (%)</th>
-            <th>Velocidad del Viento (km/h)</th>
-            <th>Nivel de Riesgo</th>
-        </tr>
-        {% for fila in registros %}
-        <tr>
-            <td>{{ fila[0].split('T')[0] }} / {{ fila[0].split('T')[1].split('.')[0] }}</td>
-            <td>{{ fila[1] }}</td>
-            <td>{{ fila[2] }}</td>
-            <td>{{ fila[3] }}</td>
-            <td>{{ fila[4] }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-    <p>No hay registros guardados en el historial aún.</p>
-    {% endif %}
-
 </body>
 </html>
