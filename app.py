@@ -81,7 +81,7 @@ def init_db():
         cursor = connexion.cursor()
         cursor.execute(''' 
         CREATE TABLE IF NOT EXISTS diagnosticos( 
-            id INTEGER PRIMARY KEY AITOINCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             fecha TEXT,
             temperatura REAL,
             humedad REAL, 
@@ -121,8 +121,7 @@ def obtener_diagnosticos():
 
 
 # ------ Flask -----
-
-app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
     cargar_reglas()
     resultado = None
