@@ -1,1 +1,5 @@
-"diagnosticos_riesgo.db" 
+diagnosticos_riesgo.db 
+venv/
+.venv/
+__pycache__/
+*.pyc
