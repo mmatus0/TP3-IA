@@ -151,9 +151,54 @@ def index():
                            datos_entrada=datos_entrada_display,
                            registros=registros)
 
+    # --- Función para Pruebas de Inferencia ---
+
+def ejecutar_pruebas_de_inferencia():
+    """Define y ejecuta casos de prueba para validar el motor de inferencia (Reglas 1, 2, 3, 4)."""
+    print("\n--- Ejecutando Pruebas de Inferencia ---")
+    
+    # Asegura que las reglas estén cargadas antes de la prueba
+    cargar_reglas() 
+    
+    # Definición de Casos de Prueba (Hechos -> Resultado Esperado)
+    # NOTA: Los casos que antes usaban la Regla 5 ahora deben caer en MEDIO o ALTO (Regla 2).
+    casos_prueba = [
+        # Caso 1: Extremo - Activa Regla 1
+        ("EXTREMO", {'temperatura': 40.0, 'humedad': 15.0, 'viento': 25.0}), 
+        
+        # Caso 2: Alto - Activa Regla 2
+        ("ALTO", {'temperatura': 35.0, 'humedad': 40.0, 'viento': 31.0}),
+        
+        # Caso 3: Medio - Activa Regla 3 (T=37.0 > 30, H=30 <= 50)
+        ("MEDIO", {'temperatura': 37.0, 'humedad': 30.0, 'viento': 15.0}), 
+        
+        # Caso 4: Medio - Activa Regla 3
+        ("MEDIO", {'temperatura': 30.1, 'humedad': 50.0, 'viento': 10.0}), 
+        
+        # Caso 5: Bajo - Activa Regla 4
+        ("BAJO", {'temperatura': 20.0, 'humedad': 60.0, 'viento': 5.0}),
+        
+        # Caso 6: (Ajustado) - Activa Regla 4 - Resultado esperado cambiado a BAJO
+        ("BAJO", {'temperatura': 5.0, 'humedad': 95.0, 'viento': 2.0}) 
+    ]
+    
+    fallos = 0
+    for esperado, hechos in casos_prueba:
+        resultado = inferir_riesgo(hechos)
+        obtenido = resultado['nivel']
+        
+        if obtenido == esperado:
+            print(f"PASA: Caso {esperado} | Entrada: {hechos}")
+        else:
+            print(f"FALLA: Caso {esperado} | ESPERADO: {esperado}, OBTENIDO: {obtenido} | Regla activada: {resultado['justificacion']}")
+            fallos += 1
+
+    print(f"\n--- Resumen de Pruebas: {len(casos_prueba)} ejecutadas, {fallos} fallos. ---")
+    return fallos == 0
 
 # --- Ejecución del Servidor ---
 if __name__ == "__main__":
     cargar_reglas()
+    ejecutar_pruebas_de_inferencia()
     init_db() # Inicializa la Base de Datos antes de ejecutar la aplicación
     app.run(debug=True)

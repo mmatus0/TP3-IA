@@ -1,7 +1,7 @@
 [
     {
         "id": 1,
-        "nombre": "Riesgo EXTREMO por Sequía y Calor",
+        "nombre": "Riesgo EXTREMO: Condiciones Críticas",
         "condiciones": {
             "temperatura": {"operador": ">=", "valor": 38},
             "humedad": {"operador": "<", "valor": 30},
@@ -12,9 +12,9 @@
     },
     {
         "id": 2,
-        "nombre": "Riesgo ALTO por Viento Fuerte y Temperatura",
+        "nombre": "Riesgo ALTO: Viento Fuerte y Temperatura",
         "condiciones": {
-            "temperatura": {"operador": ">", "valor": 30},
+            "temperatura": {"operador": ">=", "valor": 33},
             "viento": {"operador": ">", "valor": 30}
         },
         "resultado": "ALTO",
@@ -22,19 +22,19 @@
     },
     {
         "id": 3,
-        "nombre": "Riesgo MEDIO - Alerta de Humedad Baja",
+        "nombre": "Riesgo MEDIO: Calor y Squedad Notable",
         "condiciones": {
-            "temperatura": {"operador": ">", "valor": 35},
-            "humedad": {"operador": "<=", "valor": 40}
+            "temperatura": {"operador": ">", "valor": 30},
+            "humedad": {"operador": "<=", "valor": 50}
         },
         "resultado": "MEDIO",
         "accion": "Aumentar el monitoreo ambiental y preparar el terreno. Riego < 50% debe activar mantenimiento."
     },
     {
         "id": 4,
-        "nombre": "Riesgo BAJO - Condiciones Estables",
+        "nombre": "Riesgo BAJO: Condiciones Estables",
         "condiciones": {
-            "temperatura": {"operador": "<", "valor": 25},
+            "temperatura": {"operador": "<=", "valor": 30},
             "humedad": {"operador": ">", "valor": 50}
         },
         "resultado": "BAJO",
